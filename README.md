@@ -1,6 +1,15 @@
 
 
 
+监控每日"去重"需要在青龙config添加文件夹tasklist
+监控每日"去重"需要在青龙config添加文件夹tasklist
+监控每日"去重"需要在青龙config添加文件夹tasklist
+监控每日"去重"需要在青龙config添加文件夹tasklist
+监控每日"去重"需要在青龙config添加文件夹tasklist
+监控每日"去重"需要在青龙config添加文件夹tasklist
+服务器：root/ql/config/tasklist
+黑群晖：docker/ql/config/tasklist
+
 
 <h1 align="center">
   青龙安装Bot监控
