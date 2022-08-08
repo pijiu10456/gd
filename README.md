@@ -16,6 +16,19 @@
 服务器：root/ql/config/tasklist
 黑群晖：docker/ql/config/tasklist
 其他环境与青龙版本自行判断
+
+出现一下问题就是青龙config缺少tasklist文件夹
+自行添加然后对着机器人 /cmd pm2 restart jbot 
+重启机器人即可
+
+【💥错误💥】
+
+文件名：user
+函数名：activityID
+错误原因：local variable 'tmpvalue' referenced before assignment
+
+建议百度/谷歌进行查询
+
 ```
 
 
