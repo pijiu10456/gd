@@ -17,7 +17,7 @@
 黑群晖：docker/ql/config/tasklist
 其他环境与青龙版本自行判断
 
-出现一下问题就是青龙config缺少tasklist文件夹
+出现以下问题就是青龙config缺少tasklist文件夹
 自行添加然后对着机器人 /cmd pm2 restart jbot 
 重启机器人即可
 
