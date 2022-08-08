@@ -114,10 +114,10 @@ pm2 stop jbot
 ## 重启机器人
 pm2 restart jbot
 
-## 一键更新1
+## 一键更新1 想保持版本请不要更新 想保持版本请不要更新 想保持版本请不要更新
 rm -rf /ql/repo/gd && cd /ql/repo/ && git clone https://git.metauniverse-cn.com/https://github.com/curtinlv/gd.git && pm2 stop jbot ; rm -rf /ql/jbot/* && cp -a /ql/repo/gd/* /ql/jbot/ ; pm2 start jbot
 
-#或一键更新2
+#或一键更新2 想保持版本请不要更新 想保持版本请不要更新 想保持版本请不要更新
 if [ -d /ql/data ];then QL=/ql/data;else QL=/ql; fi;cd ${QL} && rm -f update.sh* && wget  -q https://raw.githubusercontent.com/curtinlv/gd/main/update.sh >/dev/null && bash update.sh
 
 ## 卸载机器人
