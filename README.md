@@ -15,6 +15,7 @@
 
 服务器：root/ql/config/tasklist
 黑群晖：docker/ql/config/tasklist
+其他环境与青龙版本自行判断
 ```
 
 
