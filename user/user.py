@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from datetime import datetime
+from ..bot.update import version as jk_version
 import asyncio
 import random
 import os
@@ -12,13 +14,12 @@ from .. import chat_id, jdbot, logger, TOKEN, user, jk, CONFIG_DIR, readJKfile
 from ..bot.utils import cmd, V4
 from ..diy.utils import rwcon, myzdjr_chatIds, my_chat_id
 jk_version = 'v1.2.9'
-from ..bot.update import version as jk_version
 
 
 bot_id = int(TOKEN.split(":")[0])
 client = user
-######  初始化
-## 新增配置自定义监控
+# 初始化
+# 新增配置自定义监控
 nameList, envNameList, scriptPathList = [], [], []
 jcDict = {}
 dlDict = {}
@@ -44,6 +45,8 @@ else:
     yanshi = 'now'
 
 # 增加jk配置在线修改生效
+
+
 @readJKfile
 async def getJkConfig(jk):
     global cmdName, isNow, log_send, log_type, patternStr, nameList, envNameList, scriptPathList, dlDict, yanshi, envNum, jk_list, jcDict
@@ -75,7 +78,8 @@ async def getJkConfig(jk):
     envNum = len(envNameList)
     for i in range(envNum):
         if i == envNum - 1:
-            patternStr += envNameList[i] + "|jd_redrain_url|jd_redrain_half_url|zjdbody"
+            patternStr += envNameList[i] + \
+                "|jd_redrain_url|jd_redrain_half_url|zjdbody"
         else:
             patternStr += envNameList[i] + "|"
 
@@ -97,6 +101,8 @@ def readDL(lable, dl=dlDict):
 readDL(True)
 ########
 # 开启队列
+
+
 async def funCX(name, scriptPath, msg, group, lable=1):
     try:
 
@@ -104,7 +110,7 @@ async def funCX(name, scriptPath, msg, group, lable=1):
         result = os.popen(cxjc)
         r = result.readlines()
         if r:
-            a = random.randint(60, 180) #队列检测休眠时间
+            a = random.randint(60, 180)  # 队列检测休眠时间
             msg = await jdbot.edit_message(msg, f"【队列】{group} 的 `[{name}]` 变量当前已在跑，已加入队列等待。本次等待`{a}`秒后再次尝试。可发送【`监控明细`】查询队列情况。")
             if lable < 21:
                 if lable == 1:
@@ -124,6 +130,8 @@ async def funCX(name, scriptPath, msg, group, lable=1):
     return msg
 
 # 查询当前已运行
+
+
 async def funCXDL():
     await getJkConfig(jk)
     dl = readDL(False)
@@ -167,6 +175,8 @@ async def funCXDL():
     return dlmsg
 
 # 增加再进入队列之前判断重复变量
+
+
 async def isduilie(kv):
     lable = False
     dl = readDL(False)
@@ -179,6 +189,7 @@ async def isduilie(kv):
         dl['v'].append(kv)
         readDL(True, dl)
     return lable
+
 
 @client.on(events.NewMessage(chats=bot_id, from_users=chat_id, pattern=r"^(/pkc|user|在吗)(\?|\？|)"))
 async def users(event):
@@ -197,6 +208,7 @@ async def users(event):
         tip = '建议百度/谷歌进行查询'
         await jdbot.send_message(chat_id, f"{title}\n\n{name}\n{function}\n错误原因：{str(e)}\n\n{tip}")
         logger.error(f"错误--->{str(e)}")
+
 
 @client.on(events.NewMessage(chats=bot_id, from_users=chat_id, pattern=r"^(监控明细|/mx)$"))
 async def user_mx(event):
@@ -217,6 +229,8 @@ async def user_mx(event):
 
 pat = '(.|\\n)*export\s(%s).*=(".*"|\'.*\')' % patternStr
 # @client.on(events.NewMessage(chats=myzdjr_chatIds, pattern=r'%s' % pat))
+
+
 @client.on(events.NewMessage(chats=myzdjr_chatIds))
 async def activityID(event):
     try:
@@ -254,6 +268,13 @@ async def activityID(event):
         msg = await jdbot.send_message(chat_id, f'【监控】{group} 发出的 `[{name}]` 环境变量！', link_preview=False)
         messages = event.message.text.split("\n")
         change = ""
+
+        # -------------------------------自定义变量-------------------------------
+        gettasklist = 'None'
+        x = datetime.now().__format__('%Y-%m-%d')
+        totalkv = ''
+        # ---------------------------------END-----------------------------------
+
         for message in messages:
             if "export " not in message:
                 continue
@@ -266,6 +287,38 @@ async def activityID(event):
             kv = kv.replace('`', '').replace('*', '')
             key = key.replace('`', '').replace('*', '')
             value = value.replace('`', '').replace('*', '')
+            # -----------以下是自定义创建tasklist脚本变量记录达到每日去除相同变量-----------
+            # 程序最上面引入from datetime import datetime
+            # 在config目录下创建tasklist文件夹
+            totalkv = totalkv + kv + '\n'
+            try:
+                try:
+                    data = open(
+                        f"{CONFIG_DIR}/tasklist/{str(x)}.txt", 'r', encoding='utf-8')
+                    gettasklist = data.read()
+                except:
+                    try:
+                        with open(f"{CONFIG_DIR}/tasklist/{str(x)}.txt", 'w', encoding='utf-8') as f:
+                            f.write('')
+                        gettasklist = '---------------' + \
+                            str(x) + '---------------\n'
+                    except:
+                        pass
+            except:
+                pass
+            if 'None' not in gettasklist:
+                tmpvalue = ''
+                try:
+                    pattern = re.compile(r'activityId=(.*?)\W', re.I)
+                    tmpvalue = pattern.findall(kv)[0]
+                except:
+                    pass
+            if len(tmpvalue) < 1:
+                tmpvalue = value
+            if tmpvalue in gettasklist:
+                continue
+            # ---------------------------------END-----------------------------------
+
             if value in configs:
                 continue
             if key in configs:
@@ -305,6 +358,19 @@ async def activityID(event):
         if len(change) == 0:
             await jdbot.edit_message(msg, f"【取消】{group} 发出的 `[{name}]` 变量无需改动！")
             return
+        # ---------------------------------写入文件-----------------------------------
+        else:
+            if 'None' not in gettasklist:
+                if totalkv:
+                    gettasklist = gettasklist + totalkv
+                else:
+                    gettasklist = gettasklist + kv + '\n'
+                try:
+                    with open(f"{CONFIG_DIR}/tasklist/{str(x)}.txt", 'w', encoding='utf-8') as f:
+                        f.write(gettasklist)
+                except:
+                    pass
+        # ---------------------------------END-----------------------------------
         try:
             lable = None
             for i in envNameList:
@@ -352,3 +418,4 @@ async def activityID(event):
         tip = '建议百度/谷歌进行查询'
         await jdbot.send_message(chat_id, f"{title}\n\n{name}\n{function}\n错误原因：{str(e)}\n\n{tip}")
         logger.error(f"错误--->{str(e)}")
+        
